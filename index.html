@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <style>
     .no-padding {
-      padding-left: ;
+      padding-left: 0;
       padding-right: 0;
       margin-left: 0;
       margin-right: 0;
@@ -34,24 +34,30 @@
       var ctx2=null;
       var img1=new Image();
       var canvas1=null;
-      var x=150-22;
-      var y=150-22;
-      var dx=5;
-      var dy=5;
+      var dx=5.0;
+      var dy=5.0;
+      var angleInRadians=0.1;
+      var width=40.0;
+      var height=40.0;
+      var pose=0.0;
+      var x=150-width/2;
+      var y=150-height/2;
+      var withinBoundary;
       //init object globally
       function init(){
-        //objImage=document.getElementById("image1");       
-        //objImage.style.position='relative';
-        //objImage.style.left='0px';
-        //objImage.style.top='0px';
         canvas1=document.getElementById("image1");
         ctx1=canvas1.getContext("2d");
-       
         //var img=document.getElementById("image1");
         img1.onload=function () {
-          ctx1.drawImage(img1,x,y,45,45);
+          ctx1.drawImage(img1,x,y,width,height);
         }
         img1.src="Images/box-turtle.png";
+      }
+      function checkWithinBoundary(x,y,dx,dy,w,h){
+        if (x+dx*Math.cos(pose)>0 && y+dy*Math.sin(pose)>0 && x+width+dx*Math.cos(pose)<w && y+height+dy*Math.sin(pose)<h) {
+          return true;
+        }
+        return false;
       }
       function getKeyAndMove(e){        
         var key_code=e.which||e.keyCode;
@@ -71,32 +77,49 @@
         }
       }
       function moveLeft(){
-        if (x>0){
-            x-=dx;
-            ctx1.clearRect(0,0,canvas1.width,canvas1.height)
-            ctx1.drawImage(img1,x,y,45,45);
-        }
+        ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+        ctx1.save();
+        ctx1.translate(x+width/2,y+height/2);
+        pose=pose-angleInRadians;
+        ctx1.rotate(pose);
+        //ctx1.drawImage(img1,x,y,45,45);
+        ctx1.drawImage(img1, -width / 2, -height / 2, width, height);
+        ctx1.restore();
       }
       function moveUp(){
-        if (y>0){
-            y-=dy;
-            ctx1.clearRect(0,0,canvas1.width,canvas1.height)
-            ctx1.drawImage(img1,x,y,45,45);
+        if (checkWithinBoundary(x,y,dx,dy,canvas1.width,canvas1.height)) {
+          ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+          ctx1.save();
+          x+=dx*Math.cos(pose);
+          y+=dy*Math.sin(pose);
+          ctx1.translate(x+width/2,y+height/2);
+          ctx1.rotate(pose);
+          //ctx1.drawImage(img1,x,y,45,45);
+          ctx1.drawImage(img1, -width / 2, -height / 2, width, height);
+          ctx1.restore();
         }
       }
       function moveRight(){
-        if (x<(canvas1.width-45)){
-            x+=dx;
-            console.log(x);
-            ctx1.clearRect(0,0,canvas1.width,canvas1.height)
-            ctx1.drawImage(img1,x,y,45,45);
-        }
+        ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+        ctx1.save();
+        ctx1.translate(x+width/2,y+height/2);
+        pose=pose+angleInRadians;
+        ctx1.rotate(pose);
+        //ctx1.drawImage(img1,x,y,45,45);
+        ctx1.drawImage(img1, -width / 2, -height / 2, width, height);
+        ctx1.restore();
       }
       function moveDown(){
-        if (y<canvas1.height-45){
-            y+=dy;
-            ctx1.clearRect(0,0,canvas1.width,canvas1.height)
-            ctx1.drawImage(img1,x,y,45,45);
+        if (checkWithinBoundary(x,y,-dx,-dy,canvas1.width,canvas1.height)) {
+          ctx1.clearRect(0,0,canvas1.width,canvas1.height);
+          ctx1.save();
+          x-=dx*Math.cos(pose);
+          y-=dy*Math.sin(pose);
+          ctx1.translate(x+width/2,y+height/2);
+          ctx1.rotate(pose);
+          //ctx1.drawImage(img1,x,y,45,45);
+          ctx1.drawImage(img1, -width / 2, -height / 2, width, height);
+          ctx1.restore();
         }
       }
       window.onload=init;
@@ -153,8 +176,6 @@
       </div>
     </div> 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/esm/popper-utils.js" integrity="sha256-Va9aSmJNpHm6UtpqIuy0vf65KJ1kM8KmtpD2CVkKiec=" crossorigin="anonymous"></script>
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
   </body>
 </html>
